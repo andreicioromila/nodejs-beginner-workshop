@@ -6,9 +6,20 @@ const Todo = require('../models/todo');
 const passport = require('passport');
 require('../passport-custom')(passport);
 
-router.get('/', (req, res, next) => {
+router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 	Todo
-		.getAll()
+		.createForUserId(req.user._id, req.body.title)
+		.then(todo => {
+			res.json(todo);
+		})
+		.catch(err => {
+			res.json({ success: false, message: err });
+		});
+});
+
+router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+	Todo
+		.getAllByUserId(req.user._id)
 		.then(todos => {
 			// todos will be an empty array if there are no todos
 			res.json(todos);
@@ -18,9 +29,9 @@ router.get('/', (req, res, next) => {
 		});
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
 	Todo
-		.getById(req.params.id)
+		.getByIdAndUserId(req.params.id, req.user._id)
 		.then(todo => {
 			// todo will be null if not found
 			res.json(todo);
@@ -30,9 +41,9 @@ router.get('/:id', (req, res, next) => {
 		});
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
 	Todo
-		.deleteById(req.params.id)
+		.deleteByIdAndUserId(req.params.id, req.user._id)
 		.then(todo => {
 			res.json(todo);
 		})
@@ -41,9 +52,9 @@ router.delete('/:id', (req, res, next) => {
 		});
 });
 
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
 	Todo
-		.updateTodo(req.params.id, req.body.title)
+		.updateByIdAndUserId(req.params.id, req.user._id, req.body.title)
 		.then(todo => {
 			res.json(todo);
 		})
@@ -52,20 +63,6 @@ router.patch('/:id', (req, res, next) => {
 		});
 });
 
-router.post('/', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-	let newTodo = new Todo({
-		title: req.body.title,
-		_userId: req.user._id
-	});
 
-	Todo
-		.createTodo(newTodo)
-		.then(todo => {
-			res.json(todo);
-		})
-		.catch(err => {
-			res.json({ success: false, message: 'Failed to create todo' });
-		});
-});
 
 module.exports = router;

@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 
 const config = require('./config.js');
 const todos = require('./routes/todos.js');
@@ -20,7 +19,6 @@ mongoose.connection.on('error', (err) => {
 });
 
 let app = express();
-app.use(cors());
 app.use(bodyParser.json());
 app.use('/todos', todos);
 app.use('/users', users);

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const slug = require('slug');
 
 const User = require('./user');
 
@@ -15,7 +14,8 @@ const TodoSchema = new mongoose.Schema({
 	},
 	done: {
 		required: true,
-		type: Boolean
+		type: Boolean,
+		default: false
 	}
 }, {
 	toJSON: {
@@ -33,23 +33,35 @@ const Todo = mongoose.model('Todo', TodoSchema);
 
 module.exports = Todo;
 
-module.exports.createTodo = todo => {
-	// can be done with callbacks as well, but we will use promises
-	return todo.save();
+module.exports.createForUserId = (userId, title) => {
+	let newTodo = new Todo({
+		_userId: userId,
+		title: title
+	});
+
+	return newTodo.save();
 };
 
-module.exports.getAll = () => {
-	return Todo
-					.find({})
-					.populate({
-						path: 'user',
-						select: 'email'
-					});
+module.exports.getAllByUserId = userId => {
+	return Todo.find({ _userId: userId });
 };
 
-module.exports.getTodosByUserId = (userId) => {
-
+module.exports.getByIdAndUserId = (id, userId) => {
+	return Todo.find({ _id: id, _userId: userId });
 }
+
+module.exports.deleteByIdAndUserId = (id, userId) => {
+	return Todo.findOneAndRemove({ _id: id, _userId: userId });
+};
+
+module.exports.updateByIdAndUserId = (id, userId, title) => {
+	return Todo
+		.findOne({ _id: id, _userId: userId })
+		.then(todo => {
+			todo.title = title;
+			return todo.save();
+		});
+};
 
 module.exports.getTodoById = id => {
 	return Todo.findOne({ _id: id });
@@ -70,17 +82,4 @@ module.exports.getTodoById = id => {
 	// 					model: 'Post'
 	// 				})
 	//return Thread.findOne({ _id: id });
-};
-
-module.exports.updateTodoById = (id, title) => {
-	return Todo
-	.findOne({ _id: id })
-	.then(todo => {
-		todo.title = title;
-		return todo.save();
-	});
-};
-
-module.exports.deleteTodoById = id => {
-	return Todo.findOneAndRemove({ _id: id });
 };

@@ -7,6 +7,7 @@ require('../passport-custom')(passport);
 let User = require('../models/user');
 
 router.get('/test', passport.authenticate('jwt', {session: false}), (req, res) => {
+	console.log(req.user);
 	res.send('successfully authenticated');
 });
 

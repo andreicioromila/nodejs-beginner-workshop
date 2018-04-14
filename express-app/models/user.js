@@ -39,6 +39,17 @@ let User = mongoose.model('User', UserSchema);
 
 module.exports = User;
 
+module.exports.getPublicUserById = id => {
+	return User
+		.findOne({ _id: id })
+		.then(user => {
+			return {
+				_id: user._id,
+				email: user.email
+			}
+		});
+}
+
 module.exports.createUser = (email, password) => {
 	let newUser = new User({ email, password });
 	return newUser.save();
