@@ -11,17 +11,9 @@ router.get('/test', passport.authenticate('jwt', {session: false}), (req, res) =
 });
 
 router.post('/register', (req, res) => {
-	let newUser = new User({
-		email: req.body.email,
-		password: req.body.password
-	});
-
-	// usually we should create a method on the user model
-	// and use that method to work with mongoose & mongodb, not use mongoose directly
-	newUser
-		.save()
+	User
+		.createUser(req.body.email, req.body.password)
 		.then(user => {
-			console.log(user);
 			res.json(user);
 		})
 		.catch(err => {
@@ -32,26 +24,13 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
 	User
-		.findOne({ email: req.body.email })
-		.then(user => {
-			user
-				.comparePassword(req.body.password)
-				.then(itMatches => {
-					if(itMatches) {
-						let payload = {
-							_id: user._id,
-							email: user.email
-						};
-						let token = jwt.sign(payload, config.secret, { expiresIn: 6000 });
-						res.json({ success: true, token: 'JWT ' + token});
-					} else {
-						res.send({error: true});
-					}
-				});
+		.login(req.body.email, req.body.password)
+		.then(jwt => {
+			res.json({ success: true, token: 'JWT ' + jwt});
 		})
 		.catch(err => {
-			res.send({error: true});
-		})
+			res.send(err);
+		});
 });
 
 module.exports = router;

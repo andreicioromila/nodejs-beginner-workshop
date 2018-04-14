@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const config = require('./config.js');
-const threads = require('./routes/threads.js');
+const todos = require('./routes/todos.js');
 const users = require('./routes/users.js');
 
 mongoose.connect(config.database);
@@ -22,7 +22,7 @@ mongoose.connection.on('error', (err) => {
 let app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/threads', threads);
+app.use('/todos', todos);
 app.use('/users', users);
 
 app.listen(config.port, () => {
