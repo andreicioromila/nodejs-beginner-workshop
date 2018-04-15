@@ -71,8 +71,9 @@ module.exports.login = (email, password) => {
 						let token = jwt.sign(payload, config.secret, { expiresIn: 6000 });
 						return Promise.resolve(token);
 					} else {
-						return Promise.reject();
+						return Promise.reject(new Error("Password does not match"));
 					}
-				});
+				})
+				.catch(err => Promise.reject(err))
 		});
 }

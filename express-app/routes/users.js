@@ -11,26 +11,25 @@ router.get('/test', passport.authenticate('jwt', {session: false}), (req, res) =
 	res.send('successfully authenticated');
 });
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
 	User
 		.createUser(req.body.email, req.body.password)
 		.then(user => {
 			res.json(user);
 		})
 		.catch(err => {
-			console.log(err);
-			res.status(409).send('problem adding user');
+			next(new AppError(err, 'User could not be created', 409))
 		});
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
 	User
 		.login(req.body.email, req.body.password)
 		.then(jwt => {
 			res.json({ success: true, token: 'JWT ' + jwt});
 		})
 		.catch(err => {
-			res.send(err);
+      next(new AppError(err, 'User could not be authenticated', 401))
 		});
 });
 
