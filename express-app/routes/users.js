@@ -1,10 +1,9 @@
-const mongoose = require('mongoose');
 const router = require('express').Router();
-const config = require('../config');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 require('../passport-custom')(passport);
-let User = require('../models/user');
+
+let usersUseCases = require('../domain/usersUseCases')
 
 router.get('/test', passport.authenticate('jwt', {session: false}), (req, res) => {
 	console.log(req.user);
@@ -12,8 +11,8 @@ router.get('/test', passport.authenticate('jwt', {session: false}), (req, res) =
 });
 
 router.post('/register', (req, res, next) => {
-	User
-		.createUser(req.body.email, req.body.password)
+	usersUseCases
+		.register(req.body.email, req.body.password)
 		.then(user => {
 			res.json(user);
 		})
@@ -23,7 +22,7 @@ router.post('/register', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-	User
+	usersUseCases
 		.login(req.body.email, req.body.password)
 		.then(jwt => {
 			res.json({ success: true, token: 'JWT ' + jwt});

@@ -15,21 +15,21 @@ let UserSchema = new mongoose.Schema({
 	}
 });
 
-UserSchema.pre('save', function(next) {
-	//this - current document
-	let user = this;
-
-	if(this.isModified('password') || this.isNew) {
-		bcrypt
-			.genSalt(10)
-			.then(salt => bcrypt.hash(user.password, salt))
-			.then(hash => {
-				user.password = hash;
-				next();
-			})
-			.catch(next);
-	}
-});
+// UserSchema.pre('save', function(next) {
+// 	//this - current document
+// 	let user = this;
+//
+// 	if(this.isModified('password') || this.isNew) {
+// 		bcrypt
+// 			.genSalt(10)
+// 			.then(salt => bcrypt.hash(user.password, salt))
+// 			.then(hash => {
+// 				user.password = hash;
+// 				next();
+// 			})
+// 			.catch(next);
+// 	}
+// });
 
 UserSchema.methods.comparePassword = function(password) {
 	return bcrypt.compare(password, this.password);
