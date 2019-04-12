@@ -17,16 +17,10 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
     })
 })
 
-router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Todo
-    .getAllByUserId(req.user._id)
-    .then(todos => {
-      // todos will be an empty array if there are no todos
-      res.json(todos)
-    })
-    .catch(err => {
-      console.log(err)
-    })
+router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const todos = await Todo.getAllByUserId(req.user._id)
+
+  return res.json(todos)
 })
 
 router.get('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
