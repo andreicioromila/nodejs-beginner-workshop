@@ -21,6 +21,9 @@ mongoose.connection.on('error', (err) => {
   console.log(`Errors while connecting to database: ${err}`)
 })
 
+const passport = require('passport')
+require('./passport-custom')(passport)
+
 let app = express()
 app.use(bodyParser.json())
 app.use('/todos', todos)

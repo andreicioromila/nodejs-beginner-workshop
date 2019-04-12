@@ -1,7 +1,5 @@
 const router = require('express').Router()
-const jwt = require('jsonwebtoken')
 const passport = require('passport')
-require('../passport-custom')(passport)
 
 let usersUseCases = require('../domain/usersUseCases')
 

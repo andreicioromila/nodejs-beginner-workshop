@@ -4,7 +4,6 @@ const router = express.Router()
 const Todo = require('../models/todo')
 
 const passport = require('passport')
-require('../passport-custom')(passport)
 
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   Todo
