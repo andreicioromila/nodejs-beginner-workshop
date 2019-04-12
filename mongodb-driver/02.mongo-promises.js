@@ -5,7 +5,7 @@ db.collection('Users').insert({id: 5}, (err, result) => {
 	db.collection('Todos').insert({name: 'fix car'}, (err, result) => {
 
 	});
-}
+})
 
 db
 	.collection('Users')
